@@ -1,5 +1,5 @@
 def registry = 'https://projectkdevops.jfrog.io/'
-def imageName = 'valaxy05.jfrog.io/valaxy-docker-local/ttrend'
+def imageName = 'projectkdevops.jfrog.io/projectkdocker-docker-local/ttrend'
 def version   = '2.1.4'
 pipeline {
     agent {
@@ -80,6 +80,28 @@ environment {
             
             }
         }   
+    }
+
+    stage(" Docker Build ") {
+      steps {
+        script {
+           echo '<--------------- Docker Build Started --------------->'
+           app = docker.build(imageName+":"+version)
+           echo '<--------------- Docker Build Ends --------------->'
+        }
+      }
+    }
+
+            stage (" Docker Publish "){
+        steps {
+            script {
+               echo '<--------------- Docker Publish Started --------------->'  
+                docker.withRegistry(registry, 'jfrog'){
+                    app.push()
+                }    
+               echo '<--------------- Docker Publish Ended --------------->'  
+            }
+        }
     }
     }
 }
